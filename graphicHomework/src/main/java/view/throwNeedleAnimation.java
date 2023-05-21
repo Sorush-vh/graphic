@@ -22,6 +22,7 @@ public class throwNeedleAnimation extends Transition{
     public Needle needle;
     public Pane pane;
     public static GameElements gameElements;
+    public static int i=0;
 
     public throwNeedleAnimation(Pane pane, Needle needle){
         this.needle=needle;
@@ -37,7 +38,7 @@ public class throwNeedleAnimation extends Transition{
         moveNeedleComponents(10, needle);
         
         if (needle.getBoundsInParent().intersects(gameElements.getMainCircle().getBoundsInParent())) {
-            collision(needle, gameElements.getMainCircle());
+            collision(needle);
         }
 
         if(needle.getNeedleTopY()<gameElements.getMainCircle().getCenterY()+50){
@@ -47,12 +48,13 @@ public class throwNeedleAnimation extends Transition{
         }
     }
 
-    public void collision(Needle needle, Circle mainCircle){
+    public void collision(Needle needle){
         needle.getThrowingAnimation().stop();
         needle.setThrowingAnimation(null);
        
         gameElements.getChildren().add(needle);
-        rotateNeedleToMerge(needle);
+        gameElements.stickedNeedles.add(needle);
+        rotateNeedleToMerge(needle, gameElements.getMainCircle());
     }
 
     private void moveNeedleComponents(int deltaY, Needle needle){
@@ -61,13 +63,9 @@ public class throwNeedleAnimation extends Transition{
         needle.edge.setY(needle.edge.getY()-deltaY);
     }
 
-
-
-    private void rotateNeedleToMerge(Needle needle){
-        Rotate rotate=new Rotate();
-        rotate.setPivotX(gameElements.getMainCircle().getCenterX());
-        rotate.setPivotY(gameElements.getMainCircle().getCenterY());
-        rotate.setAngle(-gameElements.rotateTransition.theta);
+    private void rotateNeedleToMerge(Needle needle , Circle mainCircle){
+        Rotate rotate= gameElements.rotateTransition.CreateRotate(
+                -gameElements.rotateTransition.getAngle(), mainCircle.getCenterX(), mainCircle.getCenterY());
         needle.getTransforms().add(rotate);
     }
     

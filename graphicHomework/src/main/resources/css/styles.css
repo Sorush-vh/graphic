@@ -24,6 +24,7 @@ TextField{
 }
 
 PasswordField{
+
     -fx-max-width: 300;
     -fx-min-width: 300;
     -fx-text-fill: rgb(174, 193, 172);

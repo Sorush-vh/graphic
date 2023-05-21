@@ -3,6 +3,10 @@ package view;
 
 
 import javafx.scene.layout.Pane;
+
+import java.security.SecureRandom;
+import java.util.Random;
+
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -25,18 +29,25 @@ import javafx.animation.Timeline;
 public class ElementsRotationTransition extends Rotate{
     
     public static GameElements gameElements;
+    public static SecureRandom randomGenerator=new SecureRandom();
 
-
+    private static double normalAngle=5;
+    private static double freezeAngle=0.25;
     
+    public boolean isOnFreeze=false;
+
+    private boolean defaultDirection=true;
     private Pane pane;
     public Timeline timeline;
+    public Timeline directionChangeTimeline;
     public double theta=0;
 
     public ElementsRotationTransition(Pane pane){
         super();
         this.setPivotX(gameElements.getMainCircle().getCenterX());
         this.setPivotY(gameElements.getMainCircle().getCenterY());
-        this.setAngle(1);
+        this.setAngle(0);
+        gameElements.getTransforms().add(this);
         
         timeline=createTimeline();
     }
@@ -53,7 +64,46 @@ public class ElementsRotationTransition extends Rotate{
     }
 
     private void executeRotate(){
-        theta=(theta+this.getAngle())%360;
-        gameElements.getTransforms().add(this);
+
+        int angleModifier=1;
+        if(!defaultDirection) angleModifier=-1;
+
+        if(!isOnFreeze) 
+            this.setAngle( (this.getAngle()+angleModifier*normalAngle)%360 );
+        else    
+            this.setAngle( (this.getAngle()+angleModifier*freezeAngle)%360 );
+
+        theta=this.getAngle();
+    }
+
+    // public void applyStickingTickle(){
+    //     int randomModifier=randomGenerator.nextInt(2);
+    //     if(randomModifier==0) randomModifier=-1;
+    //     Rotate rotate=CreateRotate(10, gameElements.getMainCircle().getCenterX(), gameElements.getMainCircle().getCenterY());
+    //     gameElements.getTransforms().add( rotate);
+    //     theta=(theta+10)%360;
+    // }
+
+    public Rotate CreateRotate(double angle, double xpivot, double ypivot){
+        Rotate rotate=new Rotate();
+        rotate.setPivotX(gameElements.getMainCircle().getCenterX());
+        rotate.setPivotY(gameElements.getMainCircle().getCenterY());
+        rotate.setAngle(-gameElements.rotateTransition.getAngle());
+        return rotate;
+    }
+
+    public void setDirectionChangeTimeline(int duration){
+        Timeline timelinez = new Timeline(new KeyFrame(Duration.millis(duration*1000),
+                actionEvent -> defaultDirection=!defaultDirection));
+
+        this.directionChangeTimeline=timelinez;
+        timelinez.setDelay(Duration.millis(0));
+    }
+
+    public void initializeDirectionChange(){
+        int duration=4+randomGenerator.nextInt(5);
+        setDirectionChangeTimeline(duration);
+        directionChangeTimeline.play();
+        directionChangeTimeline.setOnFinished(event ->  initializeDirectionChange());
     }
 }

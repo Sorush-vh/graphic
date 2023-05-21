@@ -3,20 +3,30 @@ package model;
 import java.util.ArrayList;
 
 import javafx.animation.Animation;
+import javafx.animation.Timeline;
 import javafx.scene.Group;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
+import javafx.util.Duration;
+import model.Needle;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 
 public class Ball extends Circle {
 
     public static double XofBalls;
     public static double YofBalls;
-    public static int ballNumber=10;
+    public static int ballNumber=GameVariables.numberOfBallsInGame;
 
+    private boolean positiveResize=true;
     public Text text;
     public Group group;
+    public Timeline ballResizeTimeline;
+    
+
 
     public Ball(double radius){
         super(XofBalls,YofBalls, radius);
@@ -27,7 +37,7 @@ public class Ball extends Circle {
 
         group= new Group();
         group.getChildren().addAll(this,text);
-        ballNumber++;
+        ballNumber--;
     }
 
     private void createTextOfBall(){
@@ -49,6 +59,32 @@ public class Ball extends Circle {
 
     public Group getBallGroup(){
         return group;
+    }
+
+    public void createResizeTimeline(){
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(50),
+                actionEvent -> executeResize()));
+
+        this.ballResizeTimeline=timeline;
+        timeline.setCycleCount(-1);
+        timeline.setDelay(Duration.millis(0));
+    }
+
+    private void executeResize(){
+        if(this.getRadius()>30)
+            positiveResize=false;
+        if(this.getRadius()<19)
+            positiveResize=true;
+        
+        if(positiveResize)
+            this.setRadius(this.getRadius()+1);
+        else 
+            this.setRadius(this.getRadius()-1);
+    }
+
+    public void startBallResizing(){
+        createResizeTimeline();
+        this.ballResizeTimeline.play();
     }
 
 }
