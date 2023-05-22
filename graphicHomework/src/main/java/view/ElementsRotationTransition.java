@@ -31,8 +31,8 @@ public class ElementsRotationTransition extends Rotate{
     public static GameElements gameElements;
     public static SecureRandom randomGenerator=new SecureRandom();
 
-    private static double normalAngle=5;
-    private static double freezeAngle=0.25;
+    private static double normalAngle=3;
+    private static double freezeAngle=1;
     
     public boolean isOnFreeze=false;
 
@@ -54,7 +54,7 @@ public class ElementsRotationTransition extends Rotate{
 
     public Timeline createTimeline(){
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(50),
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(40),
                 actionEvent -> executeRotate()));
 
         this.timeline=timeline;
@@ -101,9 +101,13 @@ public class ElementsRotationTransition extends Rotate{
     }
 
     public void initializeDirectionChange(){
-        int duration=4+randomGenerator.nextInt(5);
+        int duration=2+randomGenerator.nextInt(5);
         setDirectionChangeTimeline(duration);
         directionChangeTimeline.play();
-        directionChangeTimeline.setOnFinished(event ->  initializeDirectionChange());
+        directionChangeTimeline.setOnFinished(event -> directionChangeEvent() );
+    }
+
+    private void directionChangeEvent(){
+        initializeDirectionChange();
     }
 }

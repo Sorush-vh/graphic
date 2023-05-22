@@ -22,6 +22,7 @@ public class Ball extends Circle {
     public static int ballNumber=GameVariables.numberOfBallsInGame;
 
     private boolean positiveResize=true;
+    private double defaultRadius;
     public Text text;
     public Group group;
     public Timeline ballResizeTimeline;
@@ -33,6 +34,7 @@ public class Ball extends Circle {
         this.setFill(javafx.scene.paint.Color.WHITE);
         this.setStroke(javafx.scene.paint.Color.BLACK);
         this.setStrokeWidth(2);
+        this.defaultRadius=radius;
         createTextOfBall();
 
         group= new Group();
@@ -62,7 +64,7 @@ public class Ball extends Circle {
     }
 
     public void createResizeTimeline(){
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(50),
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100),
                 actionEvent -> executeResize()));
 
         this.ballResizeTimeline=timeline;
@@ -71,9 +73,9 @@ public class Ball extends Circle {
     }
 
     private void executeResize(){
-        if(this.getRadius()>30)
+        if(this.getRadius()>defaultRadius*1.15)
             positiveResize=false;
-        if(this.getRadius()<19)
+        if(this.getRadius()<defaultRadius)
             positiveResize=true;
         
         if(positiveResize)

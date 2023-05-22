@@ -1,11 +1,13 @@
 package model;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import org.json.simple.parser.ParseException;
 
 import controller.JsonConverter;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import view.RegisterMenuController;
 
 public class User {
@@ -13,6 +15,8 @@ public class User {
     private String username;
     private String password;
     private Image avatar;
+    private int[] difficultyScores;
+    private KeyCode[] userKeyBinds;
 
     private static final ArrayList<User> users=new ArrayList<User>();
     private static User activeUser;
@@ -28,6 +32,8 @@ public class User {
     public User(String username, String password){
         this.username=username;
         this.password=password;
+        this.difficultyScores=new int[3];
+        userKeyBinds=new KeyCode[3];
     }
 
     public String getUsername(){

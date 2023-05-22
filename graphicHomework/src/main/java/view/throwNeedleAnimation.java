@@ -55,12 +55,23 @@ public class throwNeedleAnimation extends Transition{
         gameElements.getChildren().add(needle);
         gameElements.stickedNeedles.add(needle);
         rotateNeedleToMerge(needle, gameElements.getMainCircle());
+        
     }
 
     private void moveNeedleComponents(int deltaY, Needle needle){
         needle.ball.setCenterY(needle.ball.getCenterY()-deltaY);
         needle.ball.text.setY(needle.ball.text.getY()-deltaY);
         needle.edge.setY(needle.edge.getY()-deltaY);
+    }
+
+    private void addPhaseEffectsToNeedle(){
+        if(Game.nextCheckpoint-1>2)
+            needle.ball.startBallResizing();
+        
+        if(Game.nextCheckpoint-1>3){
+            needle.setDisappearingTimeline();
+            needle.disappearingTimeLine.play();
+        }
     }
 
     private void rotateNeedleToMerge(Needle needle , Circle mainCircle){

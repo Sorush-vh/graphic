@@ -24,17 +24,25 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.Ball;
 import model.GameElements;
+import model.GameVariables;
 import model.Needle;
 
 public class Game extends Application {
 
     public static boolean isGameGoingOn=true;
+    public static int nextCheckpoint=2;
+    public static int scoreValue;
+    
     Pane gamePane;
     GameElements gameElements;
     ProgressBar freezeBar;
     Text freezePercentage;
+    Text scoreText;
     HBox freezeHBox;
     Text OutputText;
+
+
+
  
 
     @Override
@@ -48,7 +56,7 @@ public class Game extends Application {
         Scene scene = new Scene(gamePane);
         stage.setScene(scene);
         createNeedle(gamePane);
-        SetFreezeBar();
+        SetUserProgressData();
         initializeTexts();
         
         stage.show();
@@ -68,7 +76,7 @@ public class Game extends Application {
     }
 
 
-    public void SetFreezeBar(){
+    public void SetUserProgressData(){
         freezeHBox=new HBox(20);
         freezeHBox.setAlignment(Pos.CENTER_RIGHT);
         freezeHBox.setLayoutX(350);
@@ -77,9 +85,13 @@ public class Game extends Application {
         freezeBar.setProgress(0.2);
         freezeHBox.getChildren().add( freezeBar);
 
-        freezePercentage= new Text(0, 0, "Progress: 0%");
+        freezePercentage= new Text(0, 0, "Freeze Progress: 0%");
         freezePercentage.setStyle("-fx-text-fill: rgb(22, 32, 9);");
-        freezeHBox.getChildren().addAll(freezePercentage);
+
+        scoreText=new Text(0,0,"Your Score: "+scoreValue);
+        scoreText.setStyle("-fx-text-fill: rgb(22, 32, 9);");
+
+        freezeHBox.getChildren().addAll(freezePercentage,scoreText);
 
         gamePane.getChildren().addAll(freezeHBox);
         
@@ -135,26 +147,57 @@ public class Game extends Application {
     public void handleNeedleThrow(Needle needle){
         needle.throwNeedle(gamePane);
         addToFreezeProgress(0.1);
-        double progressInPercent=freezeBar.getProgress()*100;
-        freezePercentage.setText("Percentage: "+(int)progressInPercent+"%");
         createNeedle(gamePane);
+        handleFreezePercentage();
+        handleScoreChange();
     }
 
-    public void initializeTexts(){
+    private void handlePhaseChange(){
+
+        int passedCheckpoint=nextCheckpoint-1;
+        switch (passedCheckpoint) {
+            case 1:
+                startDirectionChange();
+                resizeBalls();
+                break;
+            case 2:
+                fadeBalls();
+            default:
+                break;
+        }
+        OutputText.setText("Entered Phase "+nextCheckpoint);
+        nextCheckpoint++;
+    }
+
+    private void initializeTexts(){
         HBox hBox=new HBox();
         hBox.setStyle("-fx-background-color: rgba(72, 70, 76, 0.306)");
+
         OutputText=new Text();
-        OutputText.setText("Mfff");
-        
+        OutputText.setText("Phase 1: enjoy:)");
         OutputText.setStyle("-fx-text-fill: rgb(22, 32, 9);");
+
         hBox.getChildren().add(OutputText);
         hBox.setLayoutX(400);
         hBox.setLayoutY(450);
-        gamePane.getChildren().add(hBox);
 
+        gamePane.getChildren().add(hBox);
     }
 
-    public void freezeElements(){
+    private void handleScoreChange(){
+        scoreValue++;
+        scoreText.setText("Your Score: "+scoreValue);
+
+        if(scoreValue> ((nextCheckpoint-1)*GameVariables.numberOfBallsInGame)/4)
+            handlePhaseChange();
+    }
+
+    private void handleFreezePercentage(){
+        double progressInPercent=freezeBar.getProgress()*100;
+        freezePercentage.setText("Percentage: "+(int)progressInPercent+"%");
+    }
+
+    private void freezeElements(){
         if(freezeBar.getProgress()<1) {
             OutputText.setText("You cant use Freeze right now!");
             return;
@@ -167,28 +210,22 @@ public class Game extends Application {
         timeline.play();
         freezeBar.setProgress(0);
         OutputText.setText("");
+        handleFreezePercentage();
     }
 
-    public void resizeBalls(){
-        for ( Needle needle : gameElements.stickedNeedles ) {
+    private void resizeBalls(){
+        for ( Needle needle : gameElements.stickedNeedles ) 
             needle.ball.startBallResizing();
-        }
     }
 
-    public void fadeBalls(){
+    private void fadeBalls(){
         for ( Needle needle : gameElements.stickedNeedles ) {
-            if(needle.disappearingTimeLine==null){
                 needle.setDisappearingTimeline();
                 needle.disappearingTimeLine.play();
-            }
-            else{
-                needle.disappearingTimeLine.stop();
-                needle.disappearingTimeLine.play();
-            }
         }
     }
 
-    public void startDirectionChange(){
+    private void startDirectionChange(){
         gameElements.rotateTransition.initializeDirectionChange();
     }
 

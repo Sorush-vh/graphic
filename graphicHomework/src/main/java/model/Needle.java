@@ -27,7 +27,7 @@ public class Needle extends Group {
 
     public Needle(){
         super();
-        ball=new Ball(20);
+        ball=new Ball(15);
         edge=new Edge(ball);
         this.getChildren().addAll(edge,ball.getBallGroup());
     }
@@ -62,12 +62,13 @@ public class Needle extends Group {
 
         this.disappearingTimeLine=timeline;
         timeline.setCycleCount(-1);
+        timeline.setDelay(Duration.millis(1000));
         timeline.setAutoReverse(true);
     }
 
     public void executeFadeTrans(){
         fadeTransition.setNode(this);
-        fadeTransition.setDuration(Duration.millis(2000));
+        fadeTransition.setDuration(Duration.millis(1000));
         fadeTransition.setFromValue(1);
         fadeTransition.setToValue(0);
         fadeTransition.play();
