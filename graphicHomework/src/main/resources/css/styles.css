@@ -46,6 +46,10 @@ PasswordField{
     -fx-opacity: 0.3;
 }
 
+.game_pane{
+    -fx-background-color: rgba(98, 140, 161, 0.388);
+}
+
 #label{
     -fx-font-size: 24px;
     -fx-text-fill: #097575;

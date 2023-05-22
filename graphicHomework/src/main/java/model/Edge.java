@@ -14,7 +14,7 @@ public class Edge extends Rectangle {
 
 
     public Edge(Ball ball){
-        super(ball.getCenterX()-6/2, ball.getCenterY()-ball.getRadius()-80, 6, 80);
+        super(ball.getCenterX()-6/2, ball.getCenterY()-70, 4, 70);
         this.setFill(javafx.scene.paint.Color.BLACK);
     }
 }

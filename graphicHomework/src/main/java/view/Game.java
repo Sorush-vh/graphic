@@ -49,7 +49,7 @@ public class Game extends Application {
     public void start(Stage stage) throws Exception {
         Pane gamePane = FXMLLoader.load(Game.class.getResource("/fxml/Game.fxml"));
         this.gamePane=gamePane;
-        setNewNeedlesStartingPos(180, 500);
+        setNewNeedlesStartingPos(180, 570);
         initializeInGameElements();
         gameElements.initializeRotation();
 
