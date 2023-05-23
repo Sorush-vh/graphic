@@ -34,7 +34,9 @@ public class Game extends Application {
     public static boolean isGameGoingOn=true;
     public static int nextCheckpoint=2;
     public static int scoreValue;
-    
+    public static Game currentGame;
+
+
     Pane gamePane;
     GameElements gameElements;
     ProgressBar freezeBar;
@@ -62,6 +64,7 @@ public class Game extends Application {
         initializeTexts();
         
         stage.show();
+        currentGame=this;
     }
 
     private void initializeInGameElements(){
@@ -116,7 +119,7 @@ public class Game extends Application {
         Needle needle = Needle.createNewNeedle();
         gamePane.getChildren().addAll(needle);
         gamePane.getChildren().get(gamePane.getChildren().size()-1).requestFocus();
-
+        
         // Rotate edgeRotate=new Rotate(15, needle.edge.getX(), needle.edge.getY());
         // needle.getTransforms().add(edgeRotate);
 
@@ -170,15 +173,13 @@ public class Game extends Application {
         int passedCheckpoint=nextCheckpoint-1;
         switch (passedCheckpoint) {
             case 1:
-            startWindEffect();
                 startDirectionChange();
                 resizeBalls();
                 break;
             case 2:
-                // fadeBalls();
-
+                fadeBalls();
             case 3:
-                
+                startWindEffect();
                 break;
         }
         OutputText.setText("Entered Phase "+nextCheckpoint);
@@ -261,6 +262,11 @@ public class Game extends Application {
         needle.ball.setCenterX(needle.ball.getCenterX()-4);
         needle.edge.setX(needle.edge.getX()-4);
         needle.ball.text.setX(needle.ball.text.getX()-4);
+    }
+
+    public void handleEndOfGame(){
+        if(!isGameGoingOn)
+        gamePane.setStyle("-fx-background-color:  rgb(34, 46, 183);");
     }
 
 }

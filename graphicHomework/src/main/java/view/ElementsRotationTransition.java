@@ -20,6 +20,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import model.Ball;
 import model.GameElements;
 import model.Needle;
 import javafx.animation.KeyFrame;
@@ -109,5 +110,11 @@ public class ElementsRotationTransition extends Rotate{
 
     private void directionChangeEvent(){
         initializeDirectionChange();
+    }
+
+    public void setClone(Ball ball){
+        Circle cloneBall= ball.cloneBall();
+        gameElements.stickedNeedlesBall.add(cloneBall);
+        cloneBall.getTransforms().add(this);
     }
 }

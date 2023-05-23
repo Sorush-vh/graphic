@@ -11,6 +11,9 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 import javafx.util.Duration;
 import model.Needle;
+import view.ElementsRotationTransition;
+import view.Game;
+import view.throwNeedleAnimation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -26,7 +29,7 @@ public class Ball extends Circle {
     public Text text;
     public Group group;
     public Timeline ballResizeTimeline;
-    
+    public Circle cloneBall;
 
 
     public Ball(double radius){
@@ -73,15 +76,22 @@ public class Ball extends Circle {
     }
 
     private void executeResize(){
-        if(this.getRadius()>defaultRadius*1.15)
+        if(this.getRadius()>defaultRadius*1.15){
             positiveResize=false;
+            if(!areBallsDisjoint()) Game.currentGame.isGameGoingOn=false;
+            Game.currentGame.handleEndOfGame();
+        }
         if(this.getRadius()<defaultRadius)
             positiveResize=true;
         
-        if(positiveResize)
+        if(positiveResize){
             this.setRadius(this.getRadius()+1);
-        else 
+            this.cloneBall.setRadius(this.getRadius()+1);
+        }
+        else {
             this.setRadius(this.getRadius()-1);
+            this.cloneBall.setRadius(this.getRadius()-1);
+        }
     }
 
     public void startBallResizing(){
@@ -89,4 +99,26 @@ public class Ball extends Circle {
         this.ballResizeTimeline.play();
     }
 
+    public Circle cloneBall(){
+        Circle circle=new Circle(this.getCenterX(),this.getCenterY(), this.getRadius());
+        circle.setOpacity(0);
+        throwNeedleAnimation.gameElements.pane.getChildren().add(circle);
+        cloneBall=circle;
+        return circle;
+    }
+
+    public static boolean areBallsDisjoint(){
+        ArrayList<Needle> stickedNeedles=ElementsRotationTransition.gameElements.stickedNeedles;
+        Needle targetNeedle;
+        for (int i = 0; i <stickedNeedles.size() ; i++) {
+            targetNeedle=stickedNeedles.get(i);
+            for (int j = 0; j < stickedNeedles.size(); j++) {
+                if(j==i) continue;
+                
+                if(targetNeedle.ball.cloneBall.getBoundsInParent().intersects(stickedNeedles.get(j).ball.cloneBall.getBoundsInParent()))
+                    return false;
+            }
+        }
+        return true;
+    }
 }

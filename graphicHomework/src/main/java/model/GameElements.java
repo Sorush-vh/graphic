@@ -17,6 +17,7 @@ public class GameElements extends Group {
     public Pane pane;
     public ElementsRotationTransition rotateTransition;
     public ArrayList <Needle> stickedNeedles=new ArrayList<Needle>();
+    public ArrayList <Circle> stickedNeedlesBall=new ArrayList<Circle>();
 
     public GameElements(Circle mainCircle,Pane pane){
         super();
@@ -36,6 +37,12 @@ public class GameElements extends Group {
 
     public double getBottomOfBallY(){
         return getMainCircle().getCenterY()+getMainCircle().getRadius();
+    }
+
+    public double getAngleDegreeOfNeedle(Needle needle){
+        double deltaX=needle.ball.getCenterX()-getMainCircle().getCenterX();
+        double deltaY=needle.ball.getCenterY()-getMainCircle().getCenterY();
+        return Math.atan(deltaX/deltaY)*180/Math.PI;
     }
 
 }

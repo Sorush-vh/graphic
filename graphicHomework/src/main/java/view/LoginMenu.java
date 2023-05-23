@@ -28,8 +28,5 @@ public class LoginMenu extends Application {
         stage.show();
     }
 
-    @FXML
-    public void initialize() {
 
-    }
 }

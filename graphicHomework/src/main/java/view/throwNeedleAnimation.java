@@ -14,6 +14,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
+import model.Ball;
 import model.Edge;
 import model.GameElements;
 import model.Needle;
@@ -46,27 +47,36 @@ public class throwNeedleAnimation extends Transition{
     
         moveNeedleComponents(10, needle);
         
-        if (   needle.edge.getDistanceFromCoord(mainBallCenterX, mainBallCenterY) < minDistance) {
-            collision(needle);
-        }
-
         if(needle.getNeedleTopY()<gameElements.getMainCircle().getCenterY()+50){
             needle.getThrowingAnimation().stop();
             needle.setThrowingAnimation(null);
             this.stop();
             pane.getChildren().remove(needle);
         }
+
+        if (   needle.edge.getDistanceFromCoord(mainBallCenterX, mainBallCenterY) < minDistance) {
+            collision(needle);
+        }
+
     }
 
     public void collision(Needle needle){
         needle.getThrowingAnimation().stop();
         needle.setThrowingAnimation(null);
        
-        changeEdge(needle);
         gameElements.getChildren().add(needle);
         gameElements.stickedNeedles.add(needle);
+        gameElements.rotateTransition.setClone(needle.ball);
         rotateNeedleToMerge(needle, gameElements.getMainCircle());
         addPhaseEffectsToNeedle();
+        // Needle lol=(Needle) gameElements.getChildren().get(2);
+        // Needle lol2=(Needle) gameElements.getChildren().get(3);
+        
+        // System.out.println(lol.ball.getBoundsInParent());
+        // System.out.println(lol2.ball.getBoundsInParent());
+        if(!Ball.areBallsDisjoint())
+            Game.currentGame.isGameGoingOn=false;
+            Game.currentGame.handleEndOfGame();
     }
 
     private void moveNeedleComponents(int deltaY, Needle needle){
@@ -94,21 +104,6 @@ public class throwNeedleAnimation extends Transition{
         Rotate rotate= gameElements.rotateTransition.CreateRotate(
                 -gameElements.rotateTransition.getAngle(), mainCircle.getCenterX(), mainCircle.getCenterY());
         needle.getTransforms().add(rotate);
-    }
-    
-
-    private void changeEdge(Needle needle){
-        // double thetaOfMerge;
-        // double deltaX=-mainBallCenterX+needle.edge.getX();
-        // double deltaY=-mainBallCenterY+needle.edge.getY();
-        // thetaOfMerge=Math.atan(deltaX/deltaY);
-        // System.out.println(deltaX);
-        // System.out.println(deltaY);
-
-        // double edgeTopX=needle.edge.getX();
-        // double edgeTopY=needle.edge.getY();
-
-        // Rotate edgeRotate=new Rotate(-thetaOfMerge*180/Math.PI, edgeTopX, edgeTopY);
-        // needle.getTransforms().add(edgeRotate);
+        needle.ball.cloneBall.getTransforms().add(rotate);
     }
 }
