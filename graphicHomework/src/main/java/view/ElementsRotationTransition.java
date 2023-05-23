@@ -101,7 +101,7 @@ public class ElementsRotationTransition extends Rotate{
     }
 
     public void initializeDirectionChange(){
-        int duration=2+randomGenerator.nextInt(5);
+        int duration=4+randomGenerator.nextInt(4);
         setDirectionChangeTimeline(duration);
         directionChangeTimeline.play();
         directionChangeTimeline.setOnFinished(event -> directionChangeEvent() );

@@ -47,7 +47,7 @@ PasswordField{
 }
 
 .game_pane{
-    -fx-background-color: rgba(98, 140, 161, 0.388);
+    -fx-background-color: rgb(98, 140, 161);
 }
 
 #label{
@@ -77,7 +77,6 @@ Button:hover{
 
 #exit_button{
     -fx-color: rgba(201, 110, 24, 0.858);
-    
 }
 
 #exit_button:hover{

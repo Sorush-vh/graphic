@@ -20,12 +20,14 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.Ball;
 import model.GameElements;
 import model.GameVariables;
 import model.Needle;
+import model.WindMeasureComponents;
 
 public class Game extends Application {
 
@@ -40,7 +42,7 @@ public class Game extends Application {
     Text scoreText;
     HBox freezeHBox;
     Text OutputText;
-
+    WindMeasureComponents windComponents;
 
 
  
@@ -68,6 +70,8 @@ public class Game extends Application {
         throwNeedleAnimation.gameElements=gameElements;
         gamePane.getChildren().add( gameElements);
         ElementsRotationTransition.gameElements=gameElements;
+
+        windComponents=new WindMeasureComponents(50, Ball.XofBalls, Ball.YofBalls-60,gamePane);
     }
 
     private void setNewNeedlesStartingPos(int ballX, int ballY){
@@ -113,6 +117,9 @@ public class Game extends Application {
         gamePane.getChildren().addAll(needle);
         gamePane.getChildren().get(gamePane.getChildren().size()-1).requestFocus();
 
+        // Rotate edgeRotate=new Rotate(15, needle.edge.getX(), needle.edge.getY());
+        // needle.getTransforms().add(edgeRotate);
+
         needle.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -135,6 +142,12 @@ public class Game extends Application {
 
                 else if (keyName.equals("X"))
                     startDirectionChange();
+
+                else if (keyName.equals("Q"))
+                    moveLeft(needle);
+
+                else if (keyName.equals("W"))
+                    moveRight(needle);;
             }
         });
     }
@@ -145,7 +158,7 @@ public class Game extends Application {
     }
 
     public void handleNeedleThrow(Needle needle){
-        needle.throwNeedle(gamePane);
+        needle.throwNeedle(gamePane,windComponents.getWindAngle());
         addToFreezeProgress(0.1);
         createNeedle(gamePane);
         handleFreezePercentage();
@@ -157,12 +170,15 @@ public class Game extends Application {
         int passedCheckpoint=nextCheckpoint-1;
         switch (passedCheckpoint) {
             case 1:
+            startWindEffect();
                 startDirectionChange();
                 resizeBalls();
                 break;
             case 2:
-                fadeBalls();
-            default:
+                // fadeBalls();
+
+            case 3:
+                
                 break;
         }
         OutputText.setText("Entered Phase "+nextCheckpoint);
@@ -227,6 +243,24 @@ public class Game extends Application {
 
     private void startDirectionChange(){
         gameElements.rotateTransition.initializeDirectionChange();
+    }
+
+    private void startWindEffect(){
+        windComponents.startGeneratingDegree();
+    }
+
+    private void moveRight(Needle needle){
+        if(needle.edge.getX()>Ball.XofBalls+24) return;
+        needle.ball.setCenterX(needle.ball.getCenterX()+4);
+        needle.edge.setX(needle.edge.getX()+4);
+        needle.ball.text.setX(needle.ball.text.getX()+4);
+    }
+
+    private void moveLeft(Needle needle){
+        if(needle.edge.getX()<Ball.XofBalls-24) return;
+        needle.ball.setCenterX(needle.ball.getCenterX()-4);
+        needle.edge.setX(needle.edge.getX()-4);
+        needle.ball.text.setX(needle.ball.text.getX()-4);
     }
 
 }

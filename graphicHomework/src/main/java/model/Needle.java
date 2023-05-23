@@ -40,14 +40,14 @@ public class Needle extends Group {
         return throwingAnimation;
     }
 
-    public void throwNeedle(Pane pane){
-        throwNeedleAnimation animation=new throwNeedleAnimation(pane, this);
+    public void throwNeedle(Pane pane,int windDegree){
+        throwNeedleAnimation animation=new throwNeedleAnimation(pane, this,windDegree);
         this.setThrowingAnimation(animation);
         animation.play();
     }
 
     public double getNeedleTopY(){
-        return ball.getCenterY()-ball.getRadius()-edge.getHeight();
+        return ball.getCenterY()-edge.getHeight();
     }
 
     public static Needle createNewNeedle(){
@@ -73,6 +73,6 @@ public class Needle extends Group {
         fadeTransition.setToValue(0);
         fadeTransition.play();
     }
-
+  
 
 }

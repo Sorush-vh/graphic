@@ -13,8 +13,21 @@ import view.Game;
 public class Edge extends Rectangle {
 
 
-    public Edge(Ball ball){
-        super(ball.getCenterX()-6/2, ball.getCenterY()-70, 4, 70);
+    public Edge (Ball ball){
+        super(ball.getCenterX()-4/2, ball.getCenterY()-70, 4, 70);
+        this.setArcWidth(5);
+        this.setArcHeight(5);
         this.setFill(javafx.scene.paint.Color.BLACK);
+    }
+
+    public Edge(double edgeX,double edgeY,double width,double height){
+        super(edgeX, edgeY, width, height);
+        this.setArcWidth(5);
+        this.setArcHeight(5);
+        this.setFill(javafx.scene.paint.Color.BLACK);
+    }
+
+    public double getDistanceFromCoord(double x, double y){
+        return Math.sqrt((this.getX()-x)*(this.getX()-x)+(this.getY()-y)*(this.getY()-y));
     }
 }
