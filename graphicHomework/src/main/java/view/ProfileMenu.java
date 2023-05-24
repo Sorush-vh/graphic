@@ -59,7 +59,8 @@ public class ProfileMenu extends Application {
             output_text.setText("Error: username already in use");
         else{
             User.getCurrentUser().setUsername(newUsername);
-            JsonConverter.putUserDataInFile(newUsername, User.getCurrentUser().getPassword(),"src/main/resources/data/users.json");
+            JsonConverter.putUserDataInFile(newUsername, User.getCurrentUser().getPassword(),User.getCurrentUser().getDifficultyScores(),
+                    User.getCurrentUser().getMissionTimes(),User.getCurrentUser().getMissionScores(),"src/main/resources/data/users.json");
         }
     }
 

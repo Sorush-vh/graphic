@@ -17,6 +17,7 @@ import javafx.util.Duration;
 import model.Ball;
 import model.Edge;
 import model.GameElements;
+import model.GameVariables;
 import model.Needle;
 
 public class throwNeedleAnimation extends Transition{
@@ -25,6 +26,7 @@ public class throwNeedleAnimation extends Transition{
     public Pane pane;
     private int windDegree;
     private double minDistance;
+    private static int needleSpeed=10;
     private static double mainBallCenterX,mainBallCenterY;
 
     public static GameElements gameElements;
@@ -45,7 +47,7 @@ public class throwNeedleAnimation extends Transition{
     @Override
     protected void interpolate(double v) {
     
-        moveNeedleComponents(10, needle);
+        moveNeedleComponents(needleSpeed, needle);
         
         if(needle.getNeedleTopY()<gameElements.getMainCircle().getCenterY()+50){
             needle.getThrowingAnimation().stop();

@@ -22,7 +22,6 @@ public class Ball extends Circle {
 
     public static double XofBalls;
     public static double YofBalls;
-    public static int ballNumber=GameVariables.numberOfBallsInGame;
 
     private boolean positiveResize=true;
     private double defaultRadius;
@@ -42,7 +41,8 @@ public class Ball extends Circle {
 
         group= new Group();
         group.getChildren().addAll(this,text);
-        ballNumber--;
+        if(GameVariables.IsGameLaunched)
+        GameVariables.numberOfBallsInGame--;
     }
 
     private void createTextOfBall(){
@@ -51,13 +51,13 @@ public class Ball extends Circle {
         Text text = new Text(XofBalls+xModifier, YofBalls+4,"");
         text.setBoundsType(TextBoundsType.VISUAL);
         text.setStyle("-fx-text-fill: black; -fx-font-size: 16px; -fx-text-alignment: center; -fx-alignment: center;");
-        text.setText(""+ballNumber);
+        text.setText(""+GameVariables.numberOfBallsInGame);
         this.text=text;
     }
 
     private int getNumberXmodifier(){
         int xModifier;
-        if(ballNumber>=10) xModifier=-8;
+        if(GameVariables.numberOfBallsInGame>=10) xModifier=-8;
         else xModifier=-5;
         return xModifier;
     }
@@ -78,8 +78,8 @@ public class Ball extends Circle {
     private void executeResize(){
         if(this.getRadius()>defaultRadius*1.15){
             positiveResize=false;
-            if(!areBallsDisjoint()) Game.currentGame.isGameGoingOn=false;
-            Game.currentGame.handleEndOfGame();
+            // if(!areBallsDisjoint()) Game.currentGame.isGameGoingOn=false;
+            // Game.currentGame.handleEndOfGame();
         }
         if(this.getRadius()<defaultRadius)
             positiveResize=true;

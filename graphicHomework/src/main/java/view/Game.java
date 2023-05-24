@@ -27,6 +27,7 @@ import model.Ball;
 import model.GameElements;
 import model.GameVariables;
 import model.Needle;
+import model.User;
 import model.WindMeasureComponents;
 
 public class Game extends Application {
@@ -37,49 +38,74 @@ public class Game extends Application {
     public static Game currentGame;
 
 
-    Pane gamePane;
-    GameElements gameElements;
+    public Pane gamePane;
+    public GameElements gameElements;
+    public Needle preparedNeedle;
     ProgressBar freezeBar;
     Text freezePercentage;
     Text scoreText;
     HBox freezeHBox;
     Text OutputText;
     WindMeasureComponents windComponents;
-
-
+    int timeLeft;
+    Text timeText;
+    Timeline timeTimeline;
  
 
     @Override
     public void start(Stage stage) throws Exception {
         Pane gamePane = FXMLLoader.load(Game.class.getResource("/fxml/Game.fxml"));
         this.gamePane=gamePane;
-        setNewNeedlesStartingPos(180, 570);
+        currentGame=this;
+
+        setNewNeedlesStartingPos(200, 560);
         initializeInGameElements();
         gameElements.initializeRotation();
 
         Scene scene = new Scene(gamePane);
         stage.setScene(scene);
-        createNeedle(gamePane);
+        
         SetUserProgressData();
         initializeTexts();
-        
+
+        GameVariables.runMission(1, currentGame);
+        setTimer();
         stage.show();
-        currentGame=this;
     }
 
     private void initializeInGameElements(){
-        Circle mainCircle= new Circle(180, 180, 80, javafx.scene.paint.Color.BLACK);
+        Circle mainCircle= new Circle(200, 200, 100, javafx.scene.paint.Color.BLACK);
         gameElements= new GameElements(mainCircle, gamePane);
         throwNeedleAnimation.gameElements=gameElements;
         gamePane.getChildren().add( gameElements);
         ElementsRotationTransition.gameElements=gameElements;
 
-        windComponents=new WindMeasureComponents(50, Ball.XofBalls, Ball.YofBalls-60,gamePane);
+        windComponents=new WindMeasureComponents(50, Ball.XofBalls, Ball.YofBalls-80,gamePane);
     }
 
     private void setNewNeedlesStartingPos(int ballX, int ballY){
         Ball.XofBalls=ballX;
         Ball.YofBalls=ballY;
+    }
+
+    private void setTimer(){
+        timeLeft=GameVariables.missionTime;
+        timeText=new Text(450, 30, "time left:"+timeLeft/60+":"+timeLeft%60);
+        timeText.setStyle("-fx-text-fill: rgb(22, 32, 9);-fx-background-color: rgba(72, 70, 76, 0.306)");
+        freezeHBox.getChildren().add(timeText);
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000),
+                actionEvent -> decreaseTime()));
+
+        this.timeTimeline=timeline;
+        timeline.setCycleCount(-1);
+        timeline.setOnFinished(event -> handleEndOfGame());
+        timeline.setDelay(Duration.millis(0));
+        timeline.play();
+    }
+
+    private void decreaseTime(){
+        timeLeft--;
+        timeText.setText("time left:"+timeLeft/60+":"+timeLeft%60);
     }
 
 
@@ -115,13 +141,11 @@ public class Game extends Application {
     }
 
 
-    private void createNeedle(Pane gamePane) {
+    public void createNeedle(Pane gamePane) {
         Needle needle = Needle.createNewNeedle();
         gamePane.getChildren().addAll(needle);
         gamePane.getChildren().get(gamePane.getChildren().size()-1).requestFocus();
-        
-        // Rotate edgeRotate=new Rotate(15, needle.edge.getX(), needle.edge.getY());
-        // needle.getTransforms().add(edgeRotate);
+        preparedNeedle=needle;
 
         needle.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -162,10 +186,12 @@ public class Game extends Application {
 
     public void handleNeedleThrow(Needle needle){
         needle.throwNeedle(gamePane,windComponents.getWindAngle());
+        if(GameVariables.IsGameLaunched){
         addToFreezeProgress(0.1);
-        createNeedle(gamePane);
         handleFreezePercentage();
         handleScoreChange();
+        }
+        createNeedle(gamePane);
     }
 
     private void handlePhaseChange(){
@@ -177,8 +203,11 @@ public class Game extends Application {
                 resizeBalls();
                 break;
             case 2:
+                freezeHBox.setStyle("-fx-background-color: rgb(130, 170, 8);");
                 fadeBalls();
+                break;
             case 3:
+                freezeHBox.setStyle("-fx-background-color: rgb(6, 163, 27);");
                 startWindEffect();
                 break;
         }
@@ -202,10 +231,11 @@ public class Game extends Application {
     }
 
     private void handleScoreChange(){
+        if(isGameGoingOn)
         scoreValue++;
         scoreText.setText("Your Score: "+scoreValue);
 
-        if(scoreValue> ((nextCheckpoint-1)*GameVariables.numberOfBallsInGame)/4)
+        if(scoreValue> ((nextCheckpoint-1)*GameVariables.totalBallNumber)/4)
             handlePhaseChange();
     }
 
@@ -221,7 +251,7 @@ public class Game extends Application {
         }
         gameElements.rotateTransition.isOnFreeze=true;
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5000),
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(GameVariables.freezeTimer*1000),
             actionEvent ->  gameElements.rotateTransition.isOnFreeze=false));
 
         timeline.play();
@@ -251,6 +281,7 @@ public class Game extends Application {
     }
 
     private void moveRight(Needle needle){
+        if(nextCheckpoint-1<=3) return;
         if(needle.edge.getX()>Ball.XofBalls+24) return;
         needle.ball.setCenterX(needle.ball.getCenterX()+4);
         needle.edge.setX(needle.edge.getX()+4);
@@ -258,6 +289,7 @@ public class Game extends Application {
     }
 
     private void moveLeft(Needle needle){
+        if(nextCheckpoint-1<=3) return;
         if(needle.edge.getX()<Ball.XofBalls-24) return;
         needle.ball.setCenterX(needle.ball.getCenterX()-4);
         needle.edge.setX(needle.edge.getX()-4);
@@ -265,8 +297,21 @@ public class Game extends Application {
     }
 
     public void handleEndOfGame(){
-        if(!isGameGoingOn)
-        gamePane.setStyle("-fx-background-color:  rgb(34, 46, 183);");
+        if(!isGameGoingOn && GameVariables.IsGameLaunched){
+            gamePane.setStyle("-fx-background-color:  rgb(34, 46, 183);");
+            int totalScore=getTotalScore();
+            int timeTaken=GameVariables.missionTime-timeLeft;
+            User.getCurrentUser().storeMissionScore(totalScore, GameVariables.missionNumber, GameVariables.missionDifficulty,timeTaken);
+        }
+    }
+
+
+    private int getTotalScore(){
+        if(GameVariables.numberOfBallsInGame==0)
+            return  (int) ((int) scoreValue*(1+0.25*(timeLeft/GameVariables.missionTime)+ GameVariables.missionDifficulty/3));
+        else
+            return (int) ((int) scoreValue*(1+ GameVariables.missionDifficulty/3));
+            
     }
 
 }

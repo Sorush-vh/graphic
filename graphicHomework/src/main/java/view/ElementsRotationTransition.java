@@ -77,13 +77,10 @@ public class ElementsRotationTransition extends Rotate{
         theta=this.getAngle();
     }
 
-    // public void applyStickingTickle(){
-    //     int randomModifier=randomGenerator.nextInt(2);
-    //     if(randomModifier==0) randomModifier=-1;
-    //     Rotate rotate=CreateRotate(10, gameElements.getMainCircle().getCenterX(), gameElements.getMainCircle().getCenterY());
-    //     gameElements.getTransforms().add( rotate);
-    //     theta=(theta+10)%360;
-    // }
+    public void applyTickle(double angle){
+        Rotate rotate=CreateRotate(angle, gameElements.getMainCircle().getCenterX(), gameElements.getMainCircle().getCenterY());
+        gameElements.getTransforms().add(rotate);
+    }
 
     public Rotate CreateRotate(double angle, double xpivot, double ypivot){
         Rotate rotate=new Rotate();

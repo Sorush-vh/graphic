@@ -13,8 +13,9 @@ import view.Game;
 public class Edge extends Rectangle {
 
 
+
     public Edge (Ball ball){
-        super(ball.getCenterX()-4/2, ball.getCenterY()-70, 4, 70);
+        super(ball.getCenterX()-4/2, ball.getCenterY()-GameVariables.edgeHeight, 4, GameVariables.edgeHeight);
         this.setArcWidth(5);
         this.setArcHeight(5);
         this.setFill(javafx.scene.paint.Color.BLACK);

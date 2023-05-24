@@ -53,6 +53,7 @@ PasswordField{
 #label{
     -fx-font-size: 24px;
     -fx-text-fill: #097575;
+    /* -fx-background-color: rgb(6, 163, 27); */
 }
 
 .pane-parent{

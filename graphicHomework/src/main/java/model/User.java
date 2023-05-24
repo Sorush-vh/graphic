@@ -16,6 +16,8 @@ public class User {
     private String password;
     private Image avatar;
     private int[] difficultyScores;
+    private int[] missionTimes;
+    private int[] missionScores;
     private KeyCode[] userKeyBinds;
 
     private static final ArrayList<User> users=new ArrayList<User>();
@@ -33,11 +35,29 @@ public class User {
         this.username=username;
         this.password=password;
         this.difficultyScores=new int[3];
-        userKeyBinds=new KeyCode[3];
+        this.userKeyBinds=new KeyCode[3];
+        this.missionScores=new int[3];
+        this.missionTimes=new int[3];
+    }
+
+    public int[] getMissionTimes(){
+        return missionTimes;
+    }
+
+    public static ArrayList<User> getUsers(){
+        return users;
     }
 
     public String getUsername(){
         return username;
+    }
+
+    public int[] getDifficultyScores(){
+        return difficultyScores;
+    }
+
+    public int[] getMissionScores(){
+        return missionScores;
     }
 
     public String getPassword(){
@@ -58,6 +78,14 @@ public class User {
 
     public void setUsername(String username){
         this.username=username;
+    }
+
+    public void storeMissionScore(int score, int mission, int difficulty,int timeTaken){
+        if(score>missionScores[mission-1]){
+            difficultyScores[difficulty-1]+=score;
+            missionScores[mission-1]=score;
+            missionTimes[mission-1]=timeTaken;
+        }
     }
 
     public static void addUser(User user){
@@ -83,7 +111,7 @@ public class User {
         User temp=new User(username, password);
         addUser(temp);
         try {
-            JsonConverter.putUserDataInFile(username, password, "src/main/resources/data/users.json");
+            JsonConverter.putUserDataInFile(username, password,temp.difficultyScores,temp.missionTimes,temp.getMissionScores() ,"src/main/resources/data/users.json");
         } catch (ParseException e) {
             e.printStackTrace();
         }
